@@ -1,11 +1,26 @@
 name: GitHub-Action-Importer/GHAdemo2
 on:
   push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 concurrency:
   group: "${{ github.ref }}"
   cancel-in-progress: true
 jobs:
+  sonarqube:
+    name: SonarQube
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   bash_execute:
     runs-on: ubuntu-latest
     timeout-minutes: 60
